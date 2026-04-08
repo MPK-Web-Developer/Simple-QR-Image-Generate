@@ -2,30 +2,54 @@ let qrInput = document.getElementById("qr-input");
 let qrImgBox = document.getElementById("qr-image-container");
 let qrImg = document.getElementById("qr-img");
 let downloadBtn = document.getElementById("download-btn");
+let loader = document.getElementById("loader");
+let formatSelect = document.getElementById("format-select");
+let qualitySelect = document.getElementById("quality-select");
 
 function generateQR() {
   if (qrInput.value.length > 0) {
+    loader.style.display = "block";
+    qrImg.style.display = "none";
+    downloadBtn.style.display = "none";
+
+    let format = formatSelect.value;
+    let size = qualitySelect.value;
+
+    // ✅ IMPORTANT: format சேர்க்கணும்
     let qrURL =
-      "https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=" +
+      "https://api.qrserver.com/v1/create-qr-code/?size=" +
+      size +
+      "x" +
+      size +
+      "&format=" +
+      format + // 🔥 FIX
+      "&data=" +
       encodeURIComponent(qrInput.value);
 
+    qrImg.onload = function () {
+      loader.style.display = "none";
+      qrImg.style.display = "block";
+      qrImgBox.classList.add("show-img");
+      downloadBtn.style.display = "block";
+    };
+
     qrImg.src = qrURL;
-    qrImgBox.classList.add("show-img");
 
-    // ✅ show download button
-    downloadBtn.style.display = "block";
-
-    // ✅ store URL for download
+    // ✅ Download logic
     downloadBtn.onclick = async function () {
       try {
-        const response = await fetch(qrURL);
+        const response = await fetch(qrURL); // 🔥 use same URL
         const blob = await response.blob();
 
         const blobURL = window.URL.createObjectURL(blob);
 
         const link = document.createElement("a");
         link.href = blobURL;
-        link.download = "qr-code.png";
+
+        let fileName = qrInput.value.replace(/\s+/g, "_").substring(0, 10);
+
+        // ✅ format + size correct
+        link.download = `${fileName}-${size}.${format}`;
 
         document.body.appendChild(link);
         link.click();

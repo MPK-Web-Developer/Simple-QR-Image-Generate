@@ -18,17 +18,34 @@
     <div class="container">
       <div class="qr-input-container">
         <input type="text" id="qr-input" required />
-        <label
-          class="qr-heading-label"
-          for="qr-input"
-          data-placeholder="Enter Text or URL"
-        ></label>
+        <label for="qr-input" data-placeholder="Enter Text or URL"></label>
       </div>
+
+      <!-- 🔽 Format Selector -->
+      <div class="select-wrapper">
+        <select id="format-select">
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+          <option value="svg">SVG</option>
+        </select>
+      </div>
+
+      <div class="select-wrapper">
+        <select id="quality-select">
+          <option value="256">Low (256px)</option>
+          <option value="512" selected>Medium (512px)</option>
+          <option value="1024">High (1024px)</option>
+        </select>
+      </div>
+
+      <!-- 🔄 Loader -->
+      <div id="loader" style="display: none">Generating...</div>
+
       <div id="qr-image-container">
         <img id="qr-img" src="" alt="QR Code" />
       </div>
-      <button id="generate-btn" onclick="generateQR()">Generate QR Code</button>
-      <!-- 🔽 New Download Button -->
+
+      <button onclick="generateQR()">Generate QR Code</button>
       <button id="download-btn" style="display: none">Download QR</button>
     </div>
 
