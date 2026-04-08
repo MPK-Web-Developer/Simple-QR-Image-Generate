@@ -24,7 +24,7 @@ function generateQR() {
       "&data=" +
       encodeURIComponent(qrInput.value);
 
-    // 🖼️ Load image
+    // Load image
     qrImg.onload = function () {
       loader.style.display = "none";
       qrImg.style.display = "block";
@@ -34,7 +34,7 @@ function generateQR() {
 
     qrImg.src = qrURL;
 
-    // ⬇️ Download (HD Fix using Canvas)
+    // Download (HD Fix using Canvas)
     downloadBtn.onclick = async function () {
       try {
         const response = await fetch(qrURL);
@@ -44,7 +44,7 @@ function generateQR() {
         img.src = URL.createObjectURL(blob);
 
         img.onload = function () {
-          // 🎯 force selected size
+          // force selected size
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
 
@@ -53,13 +53,13 @@ function generateQR() {
 
           ctx.drawImage(img, 0, 0, size, size);
 
-          // 🎨 format handling
+          // format handling
           let mimeType = "image/png";
           if (format === "jpg") mimeType = "image/jpeg";
 
           const finalURL = canvas.toDataURL(mimeType, 1.0);
 
-          // 📁 filename
+          // filename
           let fileName = qrInput.value.replace(/\s+/g, "_").substring(0, 10);
 
           const link = document.createElement("a");
@@ -80,3 +80,4 @@ function generateQR() {
     }, 1000);
   }
 }
+AA;
