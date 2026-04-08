@@ -13,19 +13,18 @@ function generateQR() {
     downloadBtn.style.display = "none";
 
     let format = formatSelect.value;
-    let size = qualitySelect.value;
+    let size = parseInt(qualitySelect.value);
 
-    // ✅ IMPORTANT: format சேர்க்கணும்
+    // 🔗 QR API
     let qrURL =
       "https://api.qrserver.com/v1/create-qr-code/?size=" +
       size +
       "x" +
       size +
-      "&format=" +
-      format + // 🔥 FIX
       "&data=" +
       encodeURIComponent(qrInput.value);
 
+    // 🖼️ Load image
     qrImg.onload = function () {
       loader.style.display = "none";
       qrImg.style.display = "block";
@@ -35,27 +34,40 @@ function generateQR() {
 
     qrImg.src = qrURL;
 
-    // ✅ Download logic
+    // ⬇️ Download (HD Fix using Canvas)
     downloadBtn.onclick = async function () {
       try {
-        const response = await fetch(qrURL); // 🔥 use same URL
+        const response = await fetch(qrURL);
         const blob = await response.blob();
 
-        const blobURL = window.URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = URL.createObjectURL(blob);
 
-        const link = document.createElement("a");
-        link.href = blobURL;
+        img.onload = function () {
+          // 🎯 force selected size
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
 
-        let fileName = qrInput.value.replace(/\s+/g, "_").substring(0, 10);
+          canvas.width = size;
+          canvas.height = size;
 
-        // ✅ format + size correct
-        link.download = `${fileName}-${size}.${format}`;
+          ctx.drawImage(img, 0, 0, size, size);
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          // 🎨 format handling
+          let mimeType = "image/png";
+          if (format === "jpg") mimeType = "image/jpeg";
 
-        window.URL.revokeObjectURL(blobURL);
+          const finalURL = canvas.toDataURL(mimeType, 1.0);
+
+          // 📁 filename
+          let fileName = qrInput.value.replace(/\s+/g, "_").substring(0, 10);
+
+          const link = document.createElement("a");
+          link.href = finalURL;
+          link.download = `${fileName}-${size}.${format}`;
+
+          link.click();
+        };
       } catch (error) {
         console.error("Download failed", error);
       }
